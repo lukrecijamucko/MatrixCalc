@@ -1,0 +1,7 @@
+package hr.unizg.pmf.matrixcalc.ui.dto;
+
+import java.util.List;
+
+public record MatrixDTO(int rows, int cols, List<EntryDTO> entries) {
+    public record EntryDTO(int row, int col, double value) {}
+}

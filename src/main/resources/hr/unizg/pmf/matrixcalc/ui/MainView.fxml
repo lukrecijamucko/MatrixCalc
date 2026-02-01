@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="hr.unizg.pmf.matrixcalc.ui.MainController">
+
+  <left>
+    <VBox spacing="8">
+      <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+
+      <Label text="Matrix A"/>
+      <HBox spacing="6">
+        <Label text="Rows"/><TextField fx:id="aRowsField" prefWidth="60"/>
+        <Label text="Cols"/><TextField fx:id="aColsField" prefWidth="60"/>
+      </HBox>
+      <TableView fx:id="aTable" editable="true" prefHeight="260"/>
+      <HBox spacing="6">
+        <Button text="Add entry" onAction="#onAddA"/>
+        <Button text="Remove" onAction="#onRemoveA"/>
+      </HBox>
+    </VBox>
+  </left>
+
+  <right>
+    <VBox spacing="8">
+      <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+
+      <Label text="Matrix B"/>
+      <HBox spacing="6">
+        <Label text="Rows"/><TextField fx:id="bRowsField" prefWidth="60"/>
+        <Label text="Cols"/><TextField fx:id="bColsField" prefWidth="60"/>
+      </HBox>
+      <TableView fx:id="bTable" editable="true" prefHeight="180"/>
+      <HBox spacing="6">
+        <Button text="Add entry" onAction="#onAddB"/>
+        <Button text="Remove" onAction="#onRemoveB"/>
+      </HBox>
+
+      <Label text="Vector b (Ax=b)  (col ignored)"/>
+      <TableView fx:id="vecBTable" editable="true" prefHeight="160"/>
+      <HBox spacing="6">
+        <Button text="Add entry" onAction="#onAddVecB"/>
+        <Button text="Remove" onAction="#onRemoveVecB"/>
+      </HBox>
+    </VBox>
+  </right>
+
+  <center>
+    <VBox spacing="10">
+      <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+
+      <Label text="Operations"/>
+      <HBox spacing="8">
+        <Button fx:id="btnAdd" text="A + B" onAction="#onAdd"/>
+        <Button fx:id="btnSub" text="A - B" onAction="#onSub"/>
+        <Button fx:id="btnMul" text="A · B" onAction="#onMul"/>
+      </HBox>
+      <HBox spacing="8">
+        <Button fx:id="btnSolve" text="Solve Ax=b" onAction="#onSolve"/>
+        <Button fx:id="btnTranspose" text="Transpose(A)" onAction="#onTranspose"/>
+        <Button fx:id="btnPinv" text="Pinv(A)" onAction="#onPinv"/>
+      </HBox>
+
+      <HBox spacing="8" alignment="CENTER_LEFT">
+        <ProgressIndicator fx:id="progress" visible="false" prefWidth="28" prefHeight="28"/>
+        <Label fx:id="statusLabel" text="Ready"/>
+      </HBox>
+
+      <Label text="Result"/>
+      <TextArea fx:id="resultArea" prefRowCount="10"/>
+    </VBox>
+  </center>
+
+  <bottom>
+    <VBox spacing="6">
+      <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+
+      <Label text="History (click to reload)"/>
+      <ListView fx:id="historyList" prefHeight="140"/>
+    </VBox>
+  </bottom>
+
+</BorderPane>
+
