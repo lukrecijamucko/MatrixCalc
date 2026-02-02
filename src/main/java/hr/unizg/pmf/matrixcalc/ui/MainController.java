@@ -11,6 +11,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
+import hr.unizg.pmf.matrixcalc.ui.service.MatrixServiceClientImpl;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,7 +45,7 @@ public class MainController {
     @FXML private ListView<HistoryItem> historyList;
 
     private final ExecutorService exec = Executors.newSingleThreadExecutor();
-    private final MatrixServiceClient service = new FakeMatrixServiceClient();
+    private final MatrixServiceClient service = new MatrixServiceClientImpl();
 
     @FXML
     public void initialize() {
