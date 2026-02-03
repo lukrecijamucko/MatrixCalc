@@ -3,7 +3,6 @@ package hr.unizg.pmf.matrixcalc.ui;
 import hr.unizg.pmf.matrixcalc.ui.dto.MatrixDTO;
 import hr.unizg.pmf.matrixcalc.ui.model.HistoryItem;
 import hr.unizg.pmf.matrixcalc.ui.model.SparseEntry;
-import hr.unizg.pmf.matrixcalc.ui.service.FakeMatrixServiceClient;
 import hr.unizg.pmf.matrixcalc.ui.service.MatrixServiceClient;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -64,20 +63,20 @@ public class MainController {
     private void setupEntryTable(TableView<SparseEntry> table) {
         table.setEditable(true);
 
-        var cRow = new TableColumn<SparseEntry, Integer>("row");
+        TableColumn<SparseEntry, Integer> cRow = new TableColumn<>("row");
         cRow.setCellValueFactory(d -> d.getValue().rowProperty().asObject());
         cRow.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         cRow.setOnEditCommit(e -> e.getRowValue().setRow(e.getNewValue()));
 
-        var cCol = new TableColumn<SparseEntry, Integer>("col");
+        TableColumn<SparseEntry, Integer> cCol = new TableColumn<>("col");
         cCol.setCellValueFactory(d -> d.getValue().colProperty().asObject());
         cCol.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         cCol.setOnEditCommit(e -> e.getRowValue().setCol(e.getNewValue()));
 
-        var cVal = new TableColumn<SparseEntry, Double>("value");
+        TableColumn<SparseEntry, Double> cVal = new TableColumn<>("value");
         cVal.setCellValueFactory(d -> d.getValue().valueProperty().asObject());
         cVal.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
-        cVal.setOnEditCommit(e -> e.getRowValue().setValue(e.getNewValue()));
+        cVal.setOnEditCommit((TableColumn.CellEditEvent<SparseEntry, Double> e) -> e.getRowValue().setValue(e.getNewValue()));
 
         table.getColumns().setAll(cRow, cCol, cVal);
     }

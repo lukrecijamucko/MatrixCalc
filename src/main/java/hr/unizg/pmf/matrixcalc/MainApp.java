@@ -14,7 +14,6 @@ public class MainApp extends Application {
             getClass().getResource("/hr/unizg/pmf/matrixcalc/ui/MainView.fxml")
         );
 
-
         Scene scene = new Scene(root);
         stage.setTitle("MatrixCalc");
         stage.setScene(scene);
