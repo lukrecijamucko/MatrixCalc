@@ -18,10 +18,17 @@
         <Label text="Cols"/><TextField fx:id="aColsField" prefWidth="60"/>
       </HBox>
       <TableView fx:id="aTable" editable="true" prefHeight="260"/>
-      <HBox spacing="6">
-        <Button text="Add entry" onAction="#onAddA"/>
-        <Button text="Remove" onAction="#onRemoveA"/>
-      </HBox>
+      <VBox spacing="6">
+          <HBox spacing="6">
+              <Button text="Add entry" onAction="#onAddA"/>
+              <Button text="Remove" onAction="#onRemoveA"/>
+          </HBox>
+          <HBox spacing="6">
+              <Button fx:id="btnImportA" text="Import A CSV" onAction="#onImportA"/>
+              <Button fx:id="btnExportA" text="Export A CSV" onAction="#onExportA"/>
+          </HBox>
+      </VBox>
+
     </VBox>
   </left>
 
@@ -35,17 +42,28 @@
         <Label text="Cols"/><TextField fx:id="bColsField" prefWidth="60"/>
       </HBox>
       <TableView fx:id="bTable" editable="true" prefHeight="180"/>
-      <HBox spacing="6">
-        <Button text="Add entry" onAction="#onAddB"/>
-        <Button text="Remove" onAction="#onRemoveB"/>
-      </HBox>
-
+      <VBox spacing="6">
+          <HBox spacing="6">
+              <Button text="Add entry" onAction="#onAddB"/>
+              <Button text="Remove" onAction="#onRemoveB"/>
+          </HBox>
+          <HBox spacing="6">
+              <Button fx:id="btnImportB" text="Import B CSV" onAction="#onImportB"/>
+              <Button fx:id="btnExportB" text="Export B CSV" onAction="#onExportB"/>
+          </HBox>
+      </VBox>
       <Label text="Vector b (Ax=b)  (col ignored)"/>
       <TableView fx:id="vecBTable" editable="true" prefHeight="160"/>
-      <HBox spacing="6">
-        <Button text="Add entry" onAction="#onAddVecB"/>
-        <Button text="Remove" onAction="#onRemoveVecB"/>
-      </HBox>
+      <VBox spacing="6">
+          <HBox spacing="6">
+              <Button text="Add entry" onAction="#onAddVecB"/>
+              <Button text="Remove" onAction="#onRemoveVecB"/>
+          </HBox>
+          <HBox spacing="6">
+              <Button fx:id="btnImportVecB" text="Import Vec B CSV" onAction="#onImportVecB"/>
+              <Button fx:id="btnExportVecB" text="Export Vec B CSV" onAction="#onExportVecB"/>
+          </HBox>
+     </VBox>
     </VBox>
   </right>
 
