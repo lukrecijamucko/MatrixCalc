@@ -17,14 +17,14 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.openjfx</groupId>
-      <artifactId>javafx-controls</artifactId>
-      <version>${javafx.version}</version>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-controls</artifactId>
+        <version>21.0.1</version>
     </dependency>
     <dependency>
-      <groupId>org.openjfx</groupId>
-      <artifactId>javafx-fxml</artifactId>
-      <version>${javafx.version}</version>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-fxml</artifactId>
+        <version>21.0.1</version>
     </dependency>
   </dependencies>
 
@@ -36,6 +36,15 @@
         <version>0.0.8</version>
         <configuration>
           <mainClass>hr.unizg.pmf.matrixcalc.MainApp</mainClass>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.0</version>
+        <configuration>
+            <mainClass>hr.unizg.pmf.matrixcalc.MainApp</mainClass>
+            <commandlineArgs></commandlineArgs>
         </configuration>
       </plugin>
     </plugins>
