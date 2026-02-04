@@ -5,6 +5,16 @@ import hr.unizg.pmf.matrixcalc.ui.dto.MatrixDTO;
 import java.util.Map;
 
 public class MatrixServiceClientImpl implements MatrixServiceClient {
+    
+    public native MatrixDTO matMul(MatrixDTO a,MatrixDTO b);
+    
+    public native MatrixDTO matSolve(MatrixDTO a,MatrixDTO b);
+    
+    public native MatrixDTO matPinv(MatrixDTO a);
+    
+    static {
+        System.loadLibrary("MatrixOps");
+    }
 
     @Override
     public String add(MatrixDTO a, MatrixDTO b) {
@@ -39,7 +49,9 @@ public class MatrixServiceClientImpl implements MatrixServiceClient {
     @Override
     public String mul(MatrixDTO a, MatrixDTO b) {
         // placeholder until math teammate plugs real multiplication
-        return "A · B\n(not implemented yet)";
+        var c = matMul(a, b);
+        var C = MatrixMapper.toSparseMap(c);
+        return "A · B\n" + MatrixMapper.formatSparseMatrix(c.rows(), c.cols(), C);
     }
 
     @Override
