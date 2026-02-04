@@ -77,11 +77,15 @@ public class MatrixServiceClientImpl implements MatrixServiceClient {
 
     @Override
     public String pinv(MatrixDTO a) {
-        return "pinv(A)\n(pseudoinverse computed in math layer)";
+        var b = matPinv(a);
+        var B = MatrixMapper.toSparseMap(b);
+        return "pinv(A)\n" + MatrixMapper.formatSparseMatrix(b.rows(), b.cols(), B);
     }
 
     @Override
     public String solve(MatrixDTO a, MatrixDTO bVector) {
-        return "solve(Ax=b)\n(solution computed in math layer)";
+        var c = matSolve(a,bVector);
+        var C = MatrixMapper.toSparseMap(c);
+        return "solve(Ax=b)\n" + MatrixMapper.formatSparseMatrix(c.rows(), c.cols(), C);
     }
 }
