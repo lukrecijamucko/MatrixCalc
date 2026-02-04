@@ -3,18 +3,21 @@ package hr.unizg.pmf.matrixcalc.ui;
 import hr.unizg.pmf.matrixcalc.ui.dto.MatrixDTO;
 import hr.unizg.pmf.matrixcalc.ui.model.HistoryItem;
 import hr.unizg.pmf.matrixcalc.ui.model.SparseEntry;
+import hr.unizg.pmf.matrixcalc.ui.service.MatrixCsvUtil;
+import hr.unizg.pmf.matrixcalc.ui.service.MatrixDao;
 import hr.unizg.pmf.matrixcalc.ui.service.MatrixServiceClient;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.stage.FileChooser;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import hr.unizg.pmf.matrixcalc.ui.service.MatrixServiceClientImpl;
 
-
+import java.io.File;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 
@@ -40,11 +43,21 @@ public class MainController {
     @FXML private Button btnSolve;
     @FXML private Button btnTranspose;
     @FXML private Button btnPinv;
+    @FXML private Button btnImportA;
+    @FXML private Button btnExportA;
+    @FXML private Button btnImportB;
+    @FXML private Button btnExportB;
+    @FXML private Button btnImportVecB;
+    @FXML private Button btnExportVecB;
+
+
+
 
     @FXML private ListView<HistoryItem> historyList;
 
     private final ExecutorService exec = Executors.newSingleThreadExecutor();
     private final MatrixServiceClient service = new MatrixServiceClientImpl();
+    private MatrixDao dao;
 
     @FXML
     public void initialize() {
@@ -54,6 +67,13 @@ public class MainController {
 
         aRowsField.setText("3"); aColsField.setText("3");
         bRowsField.setText("3"); bColsField.setText("3");
+
+        try {
+            dao = new MatrixDao();
+            historyList.getItems().addAll(dao.loadHistory());
+        } catch (SQLException ex) {
+            showError(ex);
+        }
 
         historyList.getSelectionModel().selectedItemProperty().addListener((obs, oldV, item) -> {
             if (item != null) loadFromHistory(item);
@@ -89,6 +109,109 @@ public class MainController {
 
     @FXML public void onAddVecB() { vecBTable.getItems().add(new SparseEntry(0, 0, 1.0)); }
     @FXML public void onRemoveVecB() { removeSelected(vecBTable); }
+
+    @FXML
+    public void onExportA() {
+        MatrixDTO A;
+        try {
+            A = toDto(aRowsField, aColsField, aTable);
+        } catch (Exception ex) { showError(ex); return; }
+
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Save Matrix A as CSV");
+        fc.setInitialFileName("matrixA.csv");
+        File file = fc.showSaveDialog(aTable.getScene().getWindow());
+        if (file == null) return;
+
+        runAsync("Exporting Matrix A...", () -> {
+            MatrixCsvUtil.exportToCsv(A, file);
+            return "Matrix A exported to " + file.getAbsolutePath();
+        }, null);
+    }
+
+    @FXML
+    public void onImportA() {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Open CSV for Matrix A");
+        File file = fc.showOpenDialog(aTable.getScene().getWindow());
+        if (file == null) return;
+
+        runAsync("Importing Matrix A...", () -> {
+            MatrixDTO dto = MatrixCsvUtil.importFromCsv(file);
+            // UI updates must run on JavaFX thread
+            javafx.application.Platform.runLater(() -> applyDtoToEditor(dto, aRowsField, aColsField, aTable));
+            return "Matrix A imported from " + file.getAbsolutePath();
+        }, null);
+    }
+    
+    @FXML
+    public void onExportB() {
+        MatrixDTO B;
+        try {
+            B = toDto(bRowsField, bColsField, bTable);
+        } catch (Exception ex) { showError(ex); return; }
+
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Save Matrix B as CSV");
+        fc.setInitialFileName("matrixB.csv");
+        File file = fc.showSaveDialog(aTable.getScene().getWindow());
+        if (file == null) return;
+
+        runAsync("Exporting Matrix B...", () -> {
+            MatrixCsvUtil.exportToCsv(B, file);
+            return "Matrix B exported to " + file.getAbsolutePath();
+        }, null);
+    }
+
+    @FXML
+    public void onImportB() {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Open CSV for Matrix B");
+        File file = fc.showOpenDialog(bTable.getScene().getWindow());
+        if (file == null) return;
+
+        runAsync("Importing Matrix B...", () -> {
+            MatrixDTO dto = MatrixCsvUtil.importFromCsv(file);
+            javafx.application.Platform.runLater(() -> applyDtoToEditor(dto, bRowsField, bColsField, bTable));
+            return "Matrix B imported from " + file.getAbsolutePath();
+        }, null);
+    }
+
+    @FXML
+    public void onExportVecB() {
+        MatrixDTO vecB;
+        try {
+            vecB = toVectorDto(aRowsField.getText().isEmpty() ? 0 : parsePositiveInt(aRowsField, "A.rows"), vecBTable);
+        } catch (Exception ex) { showError(ex); return; }
+
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Save Vector b as CSV");
+        fc.setInitialFileName("vectorB.csv");
+        File file = fc.showSaveDialog(vecBTable.getScene().getWindow());
+        if (file == null) return;
+
+        try {
+            MatrixCsvUtil.exportToCsv(vecB, file);
+        } catch (Exception ex) {
+            showError(ex);
+        }
+    }
+
+    @FXML
+    public void onImportVecB() {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Open CSV for Vector b");
+        File file = fc.showOpenDialog(vecBTable.getScene().getWindow());
+        if (file == null) return;
+
+        try {
+            MatrixDTO dto = MatrixCsvUtil.importFromCsv(file);
+            applyDtoToVector(dto, vecBTable);
+        } catch (Exception ex) {
+            showError(ex);
+        }
+    }
+
 
     private void removeSelected(TableView<SparseEntry> table) {
         var sel = table.getSelectionModel().getSelectedItem();
@@ -189,7 +312,14 @@ public class MainController {
     }
 
     private void pushHistory(String op, MatrixDTO A, MatrixDTO B, MatrixDTO vecB, String resultText) {
-        historyList.getItems().add(0, new HistoryItem(op, LocalDateTime.now(), A, B, vecB, resultText));
+        HistoryItem item = new HistoryItem(op, LocalDateTime.now(), A, B, vecB, resultText);
+        historyList.getItems().add(0, item);
+
+        try {
+            if (dao != null) dao.saveHistory(op, A, B, vecB, resultText);
+        } catch (SQLException ex) {
+            showError(ex);
+        }
     }
 
     private void loadFromHistory(HistoryItem item) {
@@ -224,8 +354,7 @@ public class MainController {
                 throw new IllegalArgumentException("A and B must have same dimensions for +.");
         } catch (Exception ex) { showError(ex); return; }
 
-        runAsync("Computing A+B...", () -> service.add(A, B),
-                res -> pushHistory("A + B", A, B, null, res));
+        runAsync("Computing A+B...", () -> service.add(A, B), res -> pushHistory("A + B", A, B, null, res));
     }
 
     @FXML public void onSub() {
@@ -237,8 +366,7 @@ public class MainController {
                 throw new IllegalArgumentException("A and B must have same dimensions for -.");
         } catch (Exception ex) { showError(ex); return; }
 
-        runAsync("Computing A-B...", () -> service.sub(A, B),
-                res -> pushHistory("A - B", A, B, null, res));
+        runAsync("Computing A-B...", () -> service.sub(A, B), res -> pushHistory("A - B", A, B, null, res));
     }
 
     @FXML public void onMul() {
@@ -250,8 +378,7 @@ public class MainController {
                 throw new IllegalArgumentException("For A·B, A.cols must equal B.rows.");
         } catch (Exception ex) { showError(ex); return; }
 
-        runAsync("Computing A·B...", () -> service.mul(A, B),
-                res -> pushHistory("A · B", A, B, null, res));
+        runAsync("Computing A·B...", () -> service.mul(A, B), res -> pushHistory("A · B", A, B, null, res));
     }
 
     @FXML public void onTranspose() {
@@ -259,8 +386,7 @@ public class MainController {
         try { A = toDto(aRowsField, aColsField, aTable); }
         catch (Exception ex) { showError(ex); return; }
 
-        runAsync("Transposing A...", () -> service.transpose(A),
-                res -> pushHistory("transpose(A)", A, null, null, res));
+        runAsync("Transposing A...", () -> service.transpose(A), res -> pushHistory("transpose(A)", A, null, null, res));
     }
 
     @FXML public void onPinv() {
@@ -268,8 +394,7 @@ public class MainController {
         try { A = toDto(aRowsField, aColsField, aTable); }
         catch (Exception ex) { showError(ex); return; }
 
-        runAsync("Computing pinv(A)...", () -> service.pinv(A),
-                res -> pushHistory("pinv(A)", A, null, null, res));
+        runAsync("Computing pinv(A)...", () -> service.pinv(A), res -> pushHistory("pinv(A)", A, null, null, res));
     }
 
     @FXML public void onSolve() {
@@ -279,7 +404,6 @@ public class MainController {
             vecB = toVectorDto(A.rows(), vecBTable);
         } catch (Exception ex) { showError(ex); return; }
 
-        runAsync("Solving Ax=b...", () -> service.solve(A, vecB),
-                res -> pushHistory("solve(Ax=b)", A, null, vecB, res));
+        runAsync("Solving Ax=b...", () -> service.solve(A, vecB), res -> pushHistory("solve(Ax=b)", A, null, vecB, res));
     }
 }
